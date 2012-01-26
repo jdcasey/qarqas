@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.commonjava.arqas</groupId>
-    <artifactId>arqas-parent</artifactId>
+    <artifactId>qarqas-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
   
-  <artifactId>arqas-port-registry</artifactId>
+  <artifactId>qarqas-port-registry</artifactId>
   <packaging>war</packaging>
   
-  <name>Arquillian-JBossAS Configurator Port Registry</name>
+  <name>Quick Arquillian-JBossAS Configurator Port Registry</name>
   
   <dependencyManagement>
     <dependencies>

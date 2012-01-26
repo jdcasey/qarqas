@@ -23,19 +23,21 @@
   </parent>
 
   <groupId>org.commonjava.arqas</groupId>
-  <artifactId>arqas-parent</artifactId>
+  <artifactId>qarqas-parent</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   
+  <name>Quick Arquillian-JBossAS Tools for Maven Builds (Parent)</name>
+  
   <modules>
-    <module>arqas-maven-plugin</module>
-    <module>arqas-port-registry</module>
+    <module>qarqas-maven-plugin</module>
+    <module>qarqas-port-registry</module>
   </modules>
   
   <scm>
-    <connection>scm:git:http://jdcasey@github.com/jdcasey/arqas.git</connection>
-    <developerConnection>scm:git:git@github.com:jdcasey/arqas.git</developerConnection>
-    <url>http://github.com/jdcasey/arqas</url>
+    <connection>scm:git:http://jdcasey@github.com/jdcasey/qarqas.git</connection>
+    <developerConnection>scm:git:git@github.com:jdcasey/qarqas.git</developerConnection>
+    <url>http://github.com/jdcasey/qarqas</url>
   </scm>
 
   <properties>

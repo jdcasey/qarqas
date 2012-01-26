@@ -18,15 +18,15 @@
   
   <parent>
     <groupId>org.commonjava.arqas</groupId>
-    <artifactId>arqas-parent</artifactId>
+    <artifactId>qarqas-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
   
   <groupId>org.commonjava.maven.plugins</groupId>
-  <artifactId>arqas-maven-plugin</artifactId>
+  <artifactId>qarqas-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
 
-  <name>Arquillian-JBossAS Maven Plugin</name>
+  <name>Quick Arquillian-JBossAS Maven Plugin</name>
 
   
   <dependencies>
