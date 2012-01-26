@@ -12,4 +12,6 @@ public interface ASConfigurator
     void configure( File jbossasDir, Properties config, Log log )
         throws MojoExecutionException;
 
+    void cleanup( File jbossasDir, Properties config, Log log );
+
 }

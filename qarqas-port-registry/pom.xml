@@ -13,34 +13,44 @@
   
   <name>Quick Arquillian-JBossAS Configurator Port Registry</name>
   
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.commonjava.couch</groupId>
-        <artifactId>couch-java-parent</artifactId>
-        <version>1.1-SNAPSHOT</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
-      <groupId>org.commonjava.couch</groupId>
-      <artifactId>couch-app-support</artifactId>
+      <groupId>org.commonjava.arqas</groupId>
+      <artifactId>qarqas-port-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>1.7.2</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
+      <version>2.2.0.GA</version>
     </dependency>
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
+      <version>1.0-SP4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+      <version>1.0.0.Final</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.commonjava.util</groupId>
+      <artifactId>logging</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
+  
+  <build>
+    <finalName>qarqas</finalName>
+  </build>
 </project>

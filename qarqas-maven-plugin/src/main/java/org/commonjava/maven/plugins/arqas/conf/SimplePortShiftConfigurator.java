@@ -15,8 +15,10 @@ import org.cdmckay.coffeedom.input.SAXBuilder;
 import org.cdmckay.coffeedom.output.Format;
 import org.cdmckay.coffeedom.output.XMLOutputter;
 import org.cdmckay.coffeedom.xpath.XPath;
+import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.IOUtil;
 
+@Component( role = ASConfigurator.class, hint = "port-shift" )
 public class SimplePortShiftConfigurator
     implements ASConfigurator
 {
@@ -76,6 +78,12 @@ public class SimplePortShiftConfigurator
         {
             IOUtil.close( writer );
         }
+    }
+
+    @Override
+    public void cleanup( final File jbossasDir, final Properties config, final Log log )
+    {
+        // NOP
     }
 
 }

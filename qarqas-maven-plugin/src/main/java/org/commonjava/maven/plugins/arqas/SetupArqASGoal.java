@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -19,7 +16,6 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.commonjava.maven.plugins.arqas.conf.ASConfigurator;
-import org.commonjava.maven.plugins.arqas.conf.SimplePortShiftConfigurator;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.impl.ArtifactResolver;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -39,23 +35,12 @@ public class SetupArqASGoal
     extends AbstractArqASGoal
 {
 
-    private static final Set<String> DEFAULT_CONFIGURATORS = new HashSet<String>()
-    {
-        private static final long serialVersionUID = 1L;
-
-        {
-            add( SimplePortShiftConfigurator.class.getSimpleName() );
-        };
-    };
-
-    private static final String ARQ_AS_CONFIG_PREFIX = "arqas.config.";
-
     private static final String JBOSS_AS_PATH = "$JBOSS_HOME";
 
     /**
      * GAV (GroupId:ArtifactId:Version) for JBossAS distribution to resolve and unpack.
      * 
-     * @parameter default-value="org.jboss.as:jboss-as-dist:7.1.0.CR1b" expression="${arqas.coordinate}"
+     * @parameter default-value="org.jboss.as:jboss-as-dist:7.1.0.CR1b" expression="${qarqas.coordinate}"
      */
     private String asCoordinate;
 
@@ -64,7 +49,7 @@ public class SetupArqASGoal
      * written.
      * 
      * @parameter default-value="${project.build.testOutputDirectory}/arquillian.xml"
-     *            expression="${arqas.arquillianXml}"
+     *            expression="${qarqas.arquillianXml}"
      */
     private File arquillianXml;
 
@@ -72,32 +57,9 @@ public class SetupArqASGoal
      * Classpath resource (default: arquillian.xml) which will be used as the template for generating the ARQ
      * configuration file pointing at the unpacked JBossAS distribution.
      * 
-     * @parameter default-value="arquillian.xml" expression="${arqas.arquillianXmlResource}"
+     * @parameter default-value="arquillian.xml" expression="${qarqas.arquillianXmlResource}"
      */
     private String arquillianXmlResource;
-
-    /**
-     * Properties to be passed into the listed configurators, to transform the JBossAS distribution before use.
-     * (<b>NOTE:</b> Using -Darqas.config.FOO=BAR is also allowed, which enables command-line configuration.)
-     * 
-     * @parameter
-     */
-    private Map<String, String> configProperties;
-
-    /**
-     * Comma-separated list of {@link ASConfigurator} implementations to apply to resolved JBossAS distribution before
-     * use.
-     * 
-     * @parameter expression="${arqas.configurators}"
-     */
-    private String configurators;
-
-    /**
-     * Whether to apply the default list of {@link ASConfigurator} implementations.
-     * 
-     * @parameter default-value="true" expression="${arqas.useDefaultConfigurators}"
-     */
-    private boolean useDefaultConfigurators;
 
     /**
      * @parameter default-value="${session}"
@@ -120,11 +82,6 @@ public class SetupArqASGoal
      * @component role-hint="zip"
      */
     private UnArchiver zipUnarchiver;
-
-    /**
-     * @component role="org.commonjava.maven.plugins.arqas.ASConfigurator"
-     */
-    private Map<String, ASConfigurator> configuratorMap;
 
     /**
      * If true, delete any pre-existing files in the destination directory and then re-extract the JBossAS distribution.
@@ -251,54 +208,15 @@ public class SetupArqASGoal
     private void runConfigurators( final Properties props )
         throws MojoExecutionException
     {
-        if ( useDefaultConfigurators )
+        for ( final ASConfigurator configurator : eachConfigurator() )
         {
-            for ( final String configurator : DEFAULT_CONFIGURATORS )
-            {
-                configureWith( configurator, props );
-            }
-        }
-
-        if ( this.configurators != null )
-        {
-            final String[] configurators = this.configurators.split( "\\s*,\\s*" );
-            for ( final String configurator : configurators )
-            {
-                configureWith( configurator, props );
-            }
+            configureWith( configurator, props );
         }
     }
 
-    private Properties createConfiguratorProperties()
-    {
-        final Properties props = new Properties();
-        final Properties sysprops = System.getProperties();
-        for ( final Object k : sysprops.keySet() )
-        {
-            final String key = (String) k;
-            if ( key.startsWith( ARQ_AS_CONFIG_PREFIX ) )
-            {
-                props.setProperty( key.substring( ARQ_AS_CONFIG_PREFIX.length() ), sysprops.getProperty( key ) );
-            }
-        }
-
-        if ( configProperties != null )
-        {
-            props.putAll( configProperties );
-        }
-
-        return props;
-    }
-
-    private void configureWith( final String configuratorHint, final Properties props )
+    private void configureWith( final ASConfigurator configurator, final Properties props )
         throws MojoExecutionException
     {
-        final ASConfigurator configurator = configuratorMap.get( configuratorHint );
-        if ( configurator == null )
-        {
-            getLog().warn( "Cannot find ASConfigurator with hint: '" + configuratorHint + "'. Skipping." );
-        }
-
         configurator.configure( output, props, getLog() );
     }
 
