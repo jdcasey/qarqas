@@ -21,7 +21,6 @@
     <dependency>
       <groupId>org.commonjava.arqas</groupId>
       <artifactId>qarqas-port-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
