@@ -51,6 +51,7 @@ public class ReservationPortConfigurator
         log.info( "Using AS port configuration:\n\n" + portConfig );
 
         final File standaloneXml = new File( jbossasDir, "standalone/configuration/standalone.xml" );
+        log.info( "Parsing standalone.xml from: " + standaloneXml );
         Document doc;
         try
         {
@@ -62,10 +63,13 @@ public class ReservationPortConfigurator
         }
 
         final List<?> nodes = XPath.selectNodes( doc, "//socket-binding-group/*[@port]" );
+        log.info( "Found " + nodes.size() + " socket specifications..." );
         boolean changed = false;
         for ( final Object nodeObj : nodes )
         {
             final Element elem = (Element) nodeObj;
+            log.info( "Attempting to configure port for: " + elem.getName() );
+
             final Attribute attr = elem.getAttribute( "port" );
             if ( attr != null )
             {
@@ -88,6 +92,7 @@ public class ReservationPortConfigurator
             return;
         }
 
+        log.info( "Writing standalone.xml to: " + standaloneXml );
         final Format format = Format.getRawFormat();
         final XMLOutputter outputter = new XMLOutputter( format );
         final String xml = outputter.outputString( doc );
