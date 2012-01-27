@@ -19,13 +19,12 @@
    xsi:schemaLocation="http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-   <container qualifier="jboss" default="true">
-      <protocol type="jmx-as7">
-         <property name="executionType">REMOTE</property>
-      </protocol>
-      <configuration>
-         <property name="jbossHome">$JBOSS_HOME</property>
-      </configuration>
-   </container>
+  <container qualifier="jboss7" default="true">
+    <configuration>
+      <property name="managementAddress">127.0.0.1</property>
+      <property name="managementPort">$MGMT_PORT</property>
+      <property name="jbossHome">$JBOSS_HOME</property>
+    </configuration>
+  </container>
 
 </arquillian>

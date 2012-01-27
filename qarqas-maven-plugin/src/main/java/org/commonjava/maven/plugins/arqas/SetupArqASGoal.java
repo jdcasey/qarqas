@@ -38,6 +38,10 @@ public class SetupArqASGoal
 
     private static final String JBOSS_AS_PATH = "$JBOSS_HOME";
 
+    public static final String MGMT_PORT = "$MGMT_PORT";
+
+    public static final String DEFAULT_MGMT_PORT = "9999";
+
     /**
      * File location (default: target/test-classes/arquillian.xml) where the generated ARQ configuration file will be
      * written.
@@ -116,10 +120,10 @@ public class SetupArqASGoal
 
         runConfigurators( props );
 
-        generateArqXml();
+        generateArqXml( props );
     }
 
-    private void generateArqXml()
+    private void generateArqXml( final Properties props )
         throws MojoExecutionException
     {
         final InputStream stream = Thread.currentThread()
@@ -142,6 +146,8 @@ public class SetupArqASGoal
                 + arquillianXmlResource + "'. Reason: " + e.getMessage(), e );
         }
 
+        final String portStr = props.getProperty( MGMT_PORT, DEFAULT_MGMT_PORT );
+        arqXml = arqXml.replace( MGMT_PORT, portStr );
         arqXml = arqXml.replace( JBOSS_AS_PATH, getASDir().getAbsolutePath() );
 
         FileWriter writer = null;

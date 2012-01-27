@@ -34,17 +34,6 @@ public class ReservationPortConfigurator
 
     public static final String DEFAULT_BASE_URL = "http://127.0.0.1:9080/qarqas/api/1.0/reservation/";
 
-    @Override
-    public void configure( final File jbossasDir, final Properties config, final Log log )
-        throws MojoExecutionException
-    {
-        final PortConfiguration portConfig = reservePorts( config, log );
-        log.info( "Using AS port configuration:\n\n" + portConfig );
-
-        rewriteDomainXml( jbossasDir, portConfig, log );
-        rewriteStandaloneXml( jbossasDir, portConfig, log );
-    }
-
     private PortConfiguration reservePorts( final Properties config, final Log log )
         throws MojoExecutionException
     {
@@ -119,6 +108,13 @@ public class ReservationPortConfigurator
         {
             log.error( "Cannot contact port configuration registry at: " + u + ". Reason: " + e.getMessage(), e );
         }
+    }
+
+    @Override
+    protected PortConfiguration getPortConfiguration( final File jbossasDir, final Properties config, final Log log )
+        throws MojoExecutionException
+    {
+        return reservePorts( config, log );
     }
 
 }

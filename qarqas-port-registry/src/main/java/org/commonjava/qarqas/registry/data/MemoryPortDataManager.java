@@ -50,13 +50,25 @@ public class MemoryPortDataManager
             return null;
         }
 
-        final PortConfiguration reservation = unreserved.iterator()
-                                                        .next();
-        logger.info( "RESERVE: %s (client: %s)", reservation, clientKey );
-        unreserved.remove( reservation );
-        reserved.put( clientKey, reservation );
+        PortConfiguration reservation = null;
+        for ( final PortConfiguration config : unreserved )
+        {
+            if ( validate( config ) )
+            {
+                reservation = config;
+                break;
+            }
 
-        renew( reservation, expiration );
+        }
+
+        if ( reservation != null )
+        {
+            logger.info( "RESERVE: %s (client: %s)", reservation, clientKey );
+            unreserved.remove( reservation );
+            reserved.put( clientKey, reservation );
+
+            renew( reservation, expiration );
+        }
 
         return reservation;
     }
@@ -136,6 +148,16 @@ public class MemoryPortDataManager
     protected void defineConfiguration( final PortConfiguration reservation )
         throws PortDataException
     {
+        if ( validate( reservation ) )
+        {
+            logger.info( "DEFINE: %s", reservation );
+            all.put( reservation.getKey(), reservation );
+            unreserved.add( reservation );
+        }
+    }
+
+    private boolean validate( final PortConfiguration reservation )
+    {
         final Integer port = reservation.getPort( "http" );
         boolean valid = reservation.isSane();
         if ( valid )
@@ -146,7 +168,8 @@ public class MemoryPortDataManager
             {
                 localhost = InetAddress.getByAddress( new byte[] { 0x7f, 0x0, 0x0, 0x1 } );
                 sock = new Socket( localhost, port );
-                logger.info( "Port configuration in use at: %s:%s. SKIPPING: %s", localhost, port, reservation );
+                logger.info( "Port configuration in use at: %s:%s (from configuration:: %s)", localhost, port,
+                             reservation );
                 valid = false;
             }
             catch ( final UnknownHostException e )
@@ -173,12 +196,7 @@ public class MemoryPortDataManager
             }
         }
 
-        if ( valid )
-        {
-            logger.info( "DEFINE: %s", reservation );
-            all.put( reservation.getKey(), reservation );
-            unreserved.add( reservation );
-        }
+        return valid;
     }
 
     @Override

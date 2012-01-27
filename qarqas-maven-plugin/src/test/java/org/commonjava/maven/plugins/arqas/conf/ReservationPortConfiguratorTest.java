@@ -31,7 +31,9 @@ public class ReservationPortConfiguratorTest
                                                                       .port( "http", 10080 )
                                                                       .build();
         final File standaloneXml = getStandaloneXml();
-        new TestReservationPortConfigurator().rewriteConfig( standaloneXml, ports, new SystemStreamLog() );
+        new TestReservationPortConfigurator().rewriteConfig( standaloneXml,
+                                                             new AbstractPortConfigurator.StandaloneSocketsResolver(),
+                                                             ports, new SystemStreamLog() );
 
         final String result = fileRead( standaloneXml );
         assertThat( result.contains( "10080" ), equalTo( true ) );

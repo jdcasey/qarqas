@@ -19,14 +19,14 @@ public class SimplePortShiftConfigurator
     public static final String PORT_SHIFT_CONFIG = "portShift";
 
     @Override
-    public void configure( final File jbossasDir, final Properties config, final Log log )
+    protected PortConfiguration getPortConfiguration( final File jbossasDir, final Properties config, final Log log )
         throws MojoExecutionException
     {
         final PortConfiguration portConfig = new PortConfiguration( STANDARD );
         final String shiftVal = config.getProperty( PORT_SHIFT_CONFIG );
         if ( shiftVal == null )
         {
-            return;
+            return null;
         }
 
         final int shift = Integer.parseInt( shiftVal );
@@ -34,15 +34,7 @@ public class SimplePortShiftConfigurator
         {
             portConfig.setPort( entry.getKey(), shift + entry.getValue() );
         }
-
-        rewriteDomainXml( jbossasDir, portConfig, log );
-        rewriteStandaloneXml( jbossasDir, portConfig, log );
-    }
-
-    @Override
-    public void cleanup( final File jbossasDir, final Properties config, final Log log )
-    {
-        // NOP
+        return portConfig;
     }
 
 }
