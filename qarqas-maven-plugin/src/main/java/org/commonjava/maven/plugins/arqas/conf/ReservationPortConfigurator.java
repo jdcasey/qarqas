@@ -22,10 +22,10 @@ import org.apache.maven.plugin.logging.Log;
 import org.cdmckay.coffeedom.Attribute;
 import org.cdmckay.coffeedom.Document;
 import org.cdmckay.coffeedom.Element;
+import org.cdmckay.coffeedom.Namespace;
 import org.cdmckay.coffeedom.input.SAXBuilder;
 import org.cdmckay.coffeedom.output.Format;
 import org.cdmckay.coffeedom.output.XMLOutputter;
-import org.cdmckay.coffeedom.xpath.XPath;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.IOUtil;
 import org.commonjava.qarqas.registry.model.PortConfiguration;
@@ -51,6 +51,12 @@ public class ReservationPortConfigurator
         log.info( "Using AS port configuration:\n\n" + portConfig );
 
         final File standaloneXml = new File( jbossasDir, "standalone/configuration/standalone.xml" );
+        rewriteConfig( standaloneXml, portConfig, log );
+    }
+
+    protected void rewriteConfig( final File standaloneXml, final PortConfiguration portConfig, final Log log )
+        throws MojoExecutionException
+    {
         log.info( "Parsing standalone.xml from: " + standaloneXml );
         Document doc;
         try
@@ -62,26 +68,36 @@ public class ReservationPortConfigurator
             throw new MojoExecutionException( "Cannot read standalone.xml file: " + e.getMessage(), e );
         }
 
-        final List<?> nodes = XPath.selectNodes( doc, "//socket-binding-group/*[@port]" );
-        log.info( "Found " + nodes.size() + " socket specifications..." );
+        final Namespace ns = doc.getRootElement()
+                                .getNamespace();
+
+        final Element sockets = doc.getRootElement()
+                                   .getChild( "socket-binding-group", ns );
         boolean changed = false;
-        for ( final Object nodeObj : nodes )
+        if ( sockets != null )
         {
-            final Element elem = (Element) nodeObj;
-            log.info( "Attempting to configure port for: " + elem.getName() );
-
-            final Attribute attr = elem.getAttribute( "port" );
-            if ( attr != null )
+            final List<Element> children = sockets.getChildren();
+            log.info( "Found " + children.size() + " socket specifications..." );
+            for ( final Element child : children )
             {
-                final String portVal = attr.getValue();
+                final String name = child.getAttribute( "name" )
+                                         .getValue();
 
-                final Integer port = portConfig.getPort( elem.getName() );
-                if ( port != null )
+                log.info( "Attempting to configure port for: " + name );
+
+                final Attribute attr = child.getAttribute( "port" );
+                if ( attr != null )
                 {
-                    attr.setValue( Integer.toString( port ) );
-                    changed = changed || !portVal.equals( attr.getValue() );
-                    log.info( "Reservation-based configuration set port named: " + elem.getName() + " to value: "
-                        + attr.getValue() );
+                    final String portVal = attr.getValue();
+
+                    final Integer port = portConfig.getPort( name );
+                    if ( port != null )
+                    {
+                        attr.setValue( Integer.toString( port ) );
+                        changed = changed || !portVal.equals( attr.getValue() );
+                        log.info( "Reservation-based configuration set port named: " + child.getName() + " to value: "
+                            + attr.getValue() );
+                    }
                 }
             }
         }

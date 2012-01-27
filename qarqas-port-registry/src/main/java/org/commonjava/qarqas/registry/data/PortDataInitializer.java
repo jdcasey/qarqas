@@ -7,14 +7,14 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import org.commonjava.qarqas.registry.model.PortConfiguration;
-import org.commonjava.qarqas.registry.model.PortReservationBuilder;
+import org.commonjava.qarqas.registry.model.PortConfigurationBuilder;
 
 @Singleton
 public class PortDataInitializer
 {
 
     private static final PortConfiguration STANDARD_RESERVATION =
-        new PortReservationBuilder().key( 0 )
+        new PortConfigurationBuilder().key( 0 )
                                     .port( "http", 8080 )
                                     .port( "https", 8443 )
                                     .port( "jacorb", 3528 )
@@ -38,7 +38,7 @@ public class PortDataInitializer
 
         for ( int i = 1; i < 64; i++ )
         {
-            final PortReservationBuilder rb = new PortReservationBuilder().key( i );
+            final PortConfigurationBuilder rb = new PortConfigurationBuilder().key( i );
             for ( final Map.Entry<String, Integer> entry : STANDARD_RESERVATION )
             {
                 final int port = entry.getValue() + ( i * 1000 );
