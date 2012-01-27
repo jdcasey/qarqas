@@ -173,9 +173,12 @@ public class MemoryPortDataManager
             }
         }
 
-        logger.info( "DEFINE: %s", reservation );
-        all.put( reservation.getKey(), reservation );
-        unreserved.add( reservation );
+        if ( valid )
+        {
+            logger.info( "DEFINE: %s", reservation );
+            all.put( reservation.getKey(), reservation );
+            unreserved.add( reservation );
+        }
     }
 
     @Override
