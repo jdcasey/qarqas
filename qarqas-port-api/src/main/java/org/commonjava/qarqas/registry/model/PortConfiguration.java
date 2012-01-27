@@ -9,6 +9,25 @@ public class PortConfiguration
     implements Comparable<PortConfiguration>, Iterable<Map.Entry<String, Integer>>
 {
 
+    public static final PortConfiguration STANDARD = new PortConfigurationBuilder().key( 0 )
+                                                                                   .port( "http", 8080 )
+                                                                                   .port( "https", 8443 )
+                                                                                   .port( "jacorb", 3528 )
+                                                                                   .port( "jacorb-ssl", 3529 )
+                                                                                   .port( "jmx-connector-registry",
+                                                                                          1090 )
+                                                                                   .port( "jmx-connector-server", 1091 )
+                                                                                   .port( "management-native", 9999 )
+                                                                                   .port( "management-http", 9990 )
+                                                                                   .port( "messaging", 5445 )
+                                                                                   .port( "messaging-throughput", 5455 )
+                                                                                   .port( "osgi-http", 8090 )
+                                                                                   .port( "remoting", 4447 )
+                                                                                   .port( "txn-recovery-environment",
+                                                                                          4712 )
+                                                                                   .port( "txn-status-manager", 4713 )
+                                                                                   .build();
+
     private Integer key;
 
     private Map<String, Integer> ports;
@@ -17,6 +36,12 @@ public class PortConfiguration
     {
         this.key = key;
         this.ports = ports;
+    }
+
+    public PortConfiguration( final PortConfiguration original )
+    {
+        this.key = original.key;
+        this.ports = new HashMap<String, Integer>( original.ports );
     }
 
     PortConfiguration()
@@ -38,14 +63,19 @@ public class PortConfiguration
         return ports == null ? null : ports.get( name );
     }
 
-    void setKey( final Integer key )
+    public void setKey( final Integer key )
     {
         this.key = key;
     }
 
-    void setPorts( final Map<String, Integer> ports )
+    public void setPorts( final Map<String, Integer> ports )
     {
         this.ports = ports;
+    }
+
+    public void setPort( final String name, final int port )
+    {
+        this.ports.put( name, port );
     }
 
     public boolean isSane()

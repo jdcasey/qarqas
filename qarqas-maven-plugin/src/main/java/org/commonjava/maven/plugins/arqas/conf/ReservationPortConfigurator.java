@@ -1,12 +1,10 @@
 package org.commonjava.maven.plugins.arqas.conf;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.http.HttpHeaders;
@@ -19,13 +17,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.cdmckay.coffeedom.Attribute;
-import org.cdmckay.coffeedom.Document;
-import org.cdmckay.coffeedom.Element;
-import org.cdmckay.coffeedom.Namespace;
-import org.cdmckay.coffeedom.input.SAXBuilder;
-import org.cdmckay.coffeedom.output.Format;
-import org.cdmckay.coffeedom.output.XMLOutputter;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.IOUtil;
 import org.commonjava.qarqas.registry.model.PortConfiguration;
@@ -34,7 +25,7 @@ import com.google.gson.GsonBuilder;
 
 @Component( role = ASConfigurator.class, hint = "reservation" )
 public class ReservationPortConfigurator
-    implements ASConfigurator
+    extends AbstractPortConfigurator
 {
 
     public static final String CLIENT_KEY_CONFIG = "clientKey";
@@ -50,83 +41,8 @@ public class ReservationPortConfigurator
         final PortConfiguration portConfig = reservePorts( config, log );
         log.info( "Using AS port configuration:\n\n" + portConfig );
 
-        final File standaloneXml = new File( jbossasDir, "standalone/configuration/standalone.xml" );
-        rewriteConfig( standaloneXml, portConfig, log );
-    }
-
-    protected void rewriteConfig( final File standaloneXml, final PortConfiguration portConfig, final Log log )
-        throws MojoExecutionException
-    {
-        log.info( "Parsing standalone.xml from: " + standaloneXml );
-        Document doc;
-        try
-        {
-            doc = new SAXBuilder().build( standaloneXml );
-        }
-        catch ( final IOException e )
-        {
-            throw new MojoExecutionException( "Cannot read standalone.xml file: " + e.getMessage(), e );
-        }
-
-        final Namespace ns = doc.getRootElement()
-                                .getNamespace();
-
-        final Element sockets = doc.getRootElement()
-                                   .getChild( "socket-binding-group", ns );
-        boolean changed = false;
-        if ( sockets != null )
-        {
-            final List<Element> children = sockets.getChildren();
-            log.info( "Found " + children.size() + " socket specifications..." );
-            for ( final Element child : children )
-            {
-                final String name = child.getAttribute( "name" )
-                                         .getValue();
-
-                log.info( "Attempting to configure port for: " + name );
-
-                final Attribute attr = child.getAttribute( "port" );
-                if ( attr != null )
-                {
-                    final String portVal = attr.getValue();
-
-                    final Integer port = portConfig.getPort( name );
-                    if ( port != null )
-                    {
-                        attr.setValue( Integer.toString( port ) );
-                        changed = changed || !portVal.equals( attr.getValue() );
-                        log.info( "Reservation-based configuration set port named: " + child.getName() + " to value: "
-                            + attr.getValue() );
-                    }
-                }
-            }
-        }
-
-        if ( !changed )
-        {
-            log.warn( "Reservation-based configuration produced NO changes! Not writing standalone.xml to disk." );
-            return;
-        }
-
-        log.info( "Writing standalone.xml to: " + standaloneXml );
-        final Format format = Format.getRawFormat();
-        final XMLOutputter outputter = new XMLOutputter( format );
-        final String xml = outputter.outputString( doc );
-
-        FileWriter writer = null;
-        try
-        {
-            writer = new FileWriter( standaloneXml );
-            writer.write( xml );
-        }
-        catch ( final IOException e )
-        {
-            throw new MojoExecutionException( "Cannot write standalone.xml file: " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtil.close( writer );
-        }
+        rewriteDomainXml( jbossasDir, portConfig, log );
+        rewriteStandaloneXml( jbossasDir, portConfig, log );
     }
 
     private PortConfiguration reservePorts( final Properties config, final Log log )
