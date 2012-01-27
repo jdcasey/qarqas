@@ -5,14 +5,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.commonjava.qarqas.registry.model.PortConfiguration;
+import org.commonjava.util.logging.Logger;
 
 public abstract class AbstractPortDataManager
     implements PortDataManager
 {
 
+    protected final Logger logger = new Logger( getClass() );
+
     private boolean initialized;
+
+    private Timer timer;
+
+    @Override
+    @PreDestroy
+    public void destroy()
+    {
+        logger.info( "Stopping expiration timer..." );
+        timer.cancel();
+        timer = null;
+    }
 
     @PostConstruct
     @Override
@@ -30,7 +45,8 @@ public abstract class AbstractPortDataManager
             defineConfiguration( reservation );
         }
 
-        new Timer( true ).schedule( new ExpireTask( this ), 1000, 1000 );
+        timer = new Timer( true );
+        timer.schedule( new ExpireTask( this ), 1000, 1000 );
 
         initialized = true;
     }

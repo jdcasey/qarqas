@@ -8,6 +8,8 @@ public interface PortDataManager
     void initialize()
         throws PortDataException;
 
+    void destroy();
+
     PortConfiguration getReservation( String clientKey )
         throws PortDataException;
 

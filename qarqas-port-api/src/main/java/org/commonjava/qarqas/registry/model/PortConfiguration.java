@@ -103,7 +103,20 @@ public class PortConfiguration
     @Override
     public String toString()
     {
-        return String.format( "PortReservation [key=%s, ports=%s]", key, ports );
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "PortReservation [key=" )
+          .append( key )
+          .append( ", ports:" );
+        for ( final Map.Entry<String, Integer> entry : ports.entrySet() )
+        {
+            sb.append( "\n" )
+              .append( entry.getKey() )
+              .append( ":\t\t" )
+              .append( entry.getValue() );
+        }
+        sb.append( "\n]" );
+
+        return sb.toString();
     }
 
     @Override

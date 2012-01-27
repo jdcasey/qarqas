@@ -29,6 +29,21 @@ public abstract class AbstractArqASGoal
     };
 
     /**
+     * GAV (GroupId:ArtifactId:Version) for JBossAS distribution to resolve and unpack.
+     * 
+     * @parameter default-value="org.jboss.as:jboss-as-dist:7.1.0.CR1b" expression="${qarqas.coordinate}"
+     */
+    protected String asCoordinate;
+
+    /**
+     * Name of root directory within JBossAS distribution zip. Default is calculated as 'jboss-as-${VERSION}', using the
+     * version from the asCoordinate parameter.
+     * 
+     * @parameter expression="${qarqas.dirName}"
+     */
+    protected String asDirName;
+
+    /**
      * File location (default: target/jbossas) where resolved JBossAS distribution should be unpacked.
      * 
      * @parameter default-value="${project.build.directory}/jbossas" expression="${qarqas.output}"
@@ -66,7 +81,7 @@ public abstract class AbstractArqASGoal
     private Map<String, String> configProperties;
 
     /**
-     * @component role="org.commonjava.maven.plugins.arqas.ASConfigurator"
+     * @component role="org.commonjava.maven.plugins.arqas.conf.ASConfigurator"
      */
     private Map<String, ASConfigurator> configuratorMap;
 
@@ -93,6 +108,22 @@ public abstract class AbstractArqASGoal
         }
 
         return props;
+    }
+
+    protected File getASDir()
+    {
+        String dirname = asDirName;
+        if ( dirname == null )
+        {
+            dirname = "jboss-as-" + getASVersion();
+        }
+
+        return new File( output, dirname );
+    }
+
+    protected String getASVersion()
+    {
+        return asCoordinate.split( ":" )[2];
     }
 
     @Override

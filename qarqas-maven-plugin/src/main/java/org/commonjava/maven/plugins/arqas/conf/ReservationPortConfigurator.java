@@ -9,12 +9,13 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -46,7 +47,8 @@ public class ReservationPortConfigurator
     public void configure( final File jbossasDir, final Properties config, final Log log )
         throws MojoExecutionException
     {
-        final PortConfiguration portConfig = reservePorts( config );
+        final PortConfiguration portConfig = reservePorts( config, log );
+        log.info( "Using AS port configuration:\n\n" + portConfig );
 
         final File standaloneXml = new File( jbossasDir, "standalone/configuration/standalone.xml" );
         Document doc;
@@ -103,19 +105,21 @@ public class ReservationPortConfigurator
         }
     }
 
-    private PortConfiguration reservePorts( final Properties config )
+    private PortConfiguration reservePorts( final Properties config, final Log log )
         throws MojoExecutionException
     {
         final String clientKey = config.getProperty( CLIENT_KEY_CONFIG );
         final String baseUrl = config.getProperty( RESERVATION_BASE_URL, DEFAULT_BASE_URL );
         final String u = baseUrl + clientKey;
+        log.info( "Releasing port configuration reservation via: " + u );
 
         InputStream stream = null;
         try
         {
             final HttpClient client = new DefaultHttpClient();
-            final HttpPost post = new HttpPost( u );
-            final HttpResponse response = client.execute( post );
+            final HttpGet req = new HttpGet( u );
+            req.setHeader( HttpHeaders.ACCEPT, "application/json" );
+            final HttpResponse response = client.execute( req );
 
             final StatusLine statusLine = response.getStatusLine();
             if ( statusLine.getStatusCode() == HttpStatus.SC_OK )
@@ -152,12 +156,13 @@ public class ReservationPortConfigurator
         final String clientKey = config.getProperty( CLIENT_KEY_CONFIG );
         final String baseUrl = config.getProperty( RESERVATION_BASE_URL, DEFAULT_BASE_URL );
         final String u = baseUrl + clientKey;
+        log.info( "Releasing port configuration reservation via: " + u );
 
         try
         {
             final HttpClient client = new DefaultHttpClient();
-            final HttpDelete del = new HttpDelete( u );
-            final HttpResponse response = client.execute( del );
+            final HttpDelete req = new HttpDelete( u );
+            final HttpResponse response = client.execute( req );
 
             final StatusLine statusLine = response.getStatusLine();
             if ( statusLine.getStatusCode() != HttpStatus.SC_OK )

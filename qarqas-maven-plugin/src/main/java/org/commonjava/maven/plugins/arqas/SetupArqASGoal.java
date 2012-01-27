@@ -28,7 +28,8 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  * Download the JBossAS distribution, unpack it, and setup an arquillian.xml file that points to this location (for
  * testing in the context of other running builds).
  * 
- * @goal setup-as
+ * @goal setup
+ * @phase pre-integration-test
  * @author jdcasey
  */
 public class SetupArqASGoal
@@ -36,13 +37,6 @@ public class SetupArqASGoal
 {
 
     private static final String JBOSS_AS_PATH = "$JBOSS_HOME";
-
-    /**
-     * GAV (GroupId:ArtifactId:Version) for JBossAS distribution to resolve and unpack.
-     * 
-     * @parameter default-value="org.jboss.as:jboss-as-dist:7.1.0.CR1b" expression="${qarqas.coordinate}"
-     */
-    private String asCoordinate;
 
     /**
      * File location (default: target/test-classes/arquillian.xml) where the generated ARQ configuration file will be
@@ -148,7 +142,7 @@ public class SetupArqASGoal
                 + arquillianXmlResource + "'. Reason: " + e.getMessage(), e );
         }
 
-        arqXml = arqXml.replace( JBOSS_AS_PATH, output.getAbsolutePath() );
+        arqXml = arqXml.replace( JBOSS_AS_PATH, getASDir().getAbsolutePath() );
 
         FileWriter writer = null;
         try
@@ -200,6 +194,7 @@ public class SetupArqASGoal
                 + e.getMessage(), e );
         }
 
+        output.mkdirs();
         zipUnarchiver.setDestDirectory( output );
         zipUnarchiver.setSourceFile( zip );
         zipUnarchiver.extract();
@@ -217,7 +212,8 @@ public class SetupArqASGoal
     private void configureWith( final ASConfigurator configurator, final Properties props )
         throws MojoExecutionException
     {
-        configurator.configure( output, props, getLog() );
+        final File dir = getASDir();
+        configurator.configure( dir, props, getLog() );
     }
 
 }

@@ -1,5 +1,9 @@
 package org.commonjava.qarqas.registry.data;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,14 +13,11 @@ import java.util.TreeSet;
 import javax.inject.Singleton;
 
 import org.commonjava.qarqas.registry.model.PortConfiguration;
-import org.commonjava.util.logging.Logger;
 
 @Singleton
 public class MemoryPortDataManager
     extends AbstractPortDataManager
 {
-
-    private final Logger logger = new Logger( getClass() );
 
     private final Map<Integer, PortConfiguration> all = new TreeMap<Integer, PortConfiguration>();
 
@@ -51,6 +52,7 @@ public class MemoryPortDataManager
 
         final PortConfiguration reservation = unreserved.iterator()
                                                         .next();
+        logger.info( "RESERVE: %s (client: %s)", reservation, clientKey );
         unreserved.remove( reservation );
         reserved.put( clientKey, reservation );
 
@@ -69,6 +71,7 @@ public class MemoryPortDataManager
     {
         if ( reservation.equals( reserved.get( clientKey ) ) )
         {
+            logger.info( "RELEASE: %s (client: %s)", reservation, clientKey );
             reserved.remove( clientKey );
             unreserved.add( reservation );
             clearExpiration( reservation );
@@ -93,6 +96,7 @@ public class MemoryPortDataManager
     @Override
     public synchronized void ban( final PortConfiguration reservation )
     {
+        logger.info( "BAN: %s", reservation );
         remove( reservation );
         unreserved.remove( reservation );
         banned.add( reservation );
@@ -132,6 +136,44 @@ public class MemoryPortDataManager
     protected void defineConfiguration( final PortConfiguration reservation )
         throws PortDataException
     {
+        final Integer port = reservation.getPort( "http" );
+        boolean valid = reservation.isSane();
+        if ( valid )
+        {
+            InetAddress localhost = null;
+            Socket sock = null;
+            try
+            {
+                localhost = InetAddress.getByAddress( new byte[] { 0x7f, 0x0, 0x0, 0x1 } );
+                sock = new Socket( localhost, port );
+                logger.info( "Port configuration in use at: %s:%s. SKIPPING: %s", localhost, port, reservation );
+                valid = false;
+            }
+            catch ( final UnknownHostException e )
+            {
+                valid = true;
+            }
+            catch ( final IOException e )
+            {
+                valid = true;
+            }
+            finally
+            {
+                if ( sock != null )
+                {
+                    try
+                    {
+                        sock.close();
+                    }
+                    catch ( final IOException e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        logger.info( "DEFINE: %s", reservation );
         all.put( reservation.getKey(), reservation );
         unreserved.add( reservation );
     }
@@ -144,12 +186,13 @@ public class MemoryPortDataManager
         {
             final PortConfiguration reservation = entry.getKey();
             final Date d = entry.getValue();
+            logger.info( "Current: %s\nExpiration: %s", current, d );
             if ( current.after( d ) )
             {
                 logger.info( "EXPIRE: %s", reservation );
                 remove( reservation );
                 unreserved.add( reservation );
-                expirations.remove( d );
+                expirations.remove( reservation );
             }
         }
     }
@@ -165,14 +208,14 @@ public class MemoryPortDataManager
     public void renew( final PortConfiguration reservation, final Long expiration )
         throws PortDataException
     {
-        final long expires;
+        long expires = System.currentTimeMillis();
         if ( expiration == null || expiration > LEASE_PERIOD * 2 )
         {
-            expires = LEASE_PERIOD;
+            expires += LEASE_PERIOD;
         }
         else
         {
-            expires = expiration;
+            expires += expiration;
         }
 
         expirations.put( reservation, new Date( expires ) );
