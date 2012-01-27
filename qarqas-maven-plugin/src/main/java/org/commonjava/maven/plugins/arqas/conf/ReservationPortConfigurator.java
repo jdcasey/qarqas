@@ -76,12 +76,15 @@ public class ReservationPortConfigurator
                 {
                     attr.setValue( Integer.toString( port ) );
                     changed = changed || !portVal.equals( attr.getValue() );
+                    log.info( "Reservation-based configuration set port named: " + elem.getName() + " to value: "
+                        + attr.getValue() );
                 }
             }
         }
 
         if ( !changed )
         {
+            log.warn( "Reservation-based configuration produced NO changes! Not writing standalone.xml to disk." );
             return;
         }
 
@@ -111,7 +114,7 @@ public class ReservationPortConfigurator
         final String clientKey = config.getProperty( CLIENT_KEY_CONFIG );
         final String baseUrl = config.getProperty( RESERVATION_BASE_URL, DEFAULT_BASE_URL );
         final String u = baseUrl + clientKey;
-        log.info( "Releasing port configuration reservation via: " + u );
+        log.info( "Reserving port configuration reservation via: " + u );
 
         InputStream stream = null;
         try
