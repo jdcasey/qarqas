@@ -1,9 +1,14 @@
 package org.commonjava.maven.plugins.arqas.conf;
 
+import static org.commonjava.maven.plugins.arqas.QArqASConstants.ARQ_AS_EXPORT_PREFIX;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -178,14 +183,21 @@ public abstract class AbstractPortConfigurator
     }
 
     @Override
-    public void configure( final File jbossasDir, final Properties config, final Log log )
+    public Map<String, String> configure( final File jbossasDir, final Properties config, final Log log )
         throws MojoExecutionException
     {
         final PortConfiguration portConfig = getPortConfiguration( jbossasDir, config, log );
         if ( portConfig == null )
         {
             log.info( "No port configuration found. Not changing ports from default." );
-            return;
+            return Collections.emptyMap();
+        }
+
+        final Map<String, String> exports = new HashMap<String, String>();
+        for ( final Map.Entry<String, Integer> entry : portConfig )
+        {
+            exports.put( ARQ_AS_EXPORT_PREFIX + entry.getKey(), entry.getValue()
+                                                                     .toString() );
         }
 
         final Integer port = portConfig.getPort( NATIVE_MGMT_PORT );
@@ -198,6 +210,8 @@ public abstract class AbstractPortConfigurator
 
         rewriteDomainXml( jbossasDir, portConfig, log );
         rewriteStandaloneXml( jbossasDir, portConfig, log );
+
+        return exports;
     }
 
     @Override

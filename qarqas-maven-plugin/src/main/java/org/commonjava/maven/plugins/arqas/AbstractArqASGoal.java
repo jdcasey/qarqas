@@ -1,5 +1,7 @@
 package org.commonjava.maven.plugins.arqas;
 
+import static org.commonjava.maven.plugins.arqas.QArqASConstants.ARQ_AS_CONFIG_PREFIX;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.maven.plugin.ContextEnabled;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -14,10 +17,8 @@ import org.commonjava.maven.plugins.arqas.conf.ASConfigurator;
 import org.commonjava.maven.plugins.arqas.conf.ReservationPortConfigurator;
 
 public abstract class AbstractArqASGoal
-    implements Mojo
+    implements Mojo, ContextEnabled
 {
-
-    private static final String ARQ_AS_CONFIG_PREFIX = "qarqas.config.";
 
     private static final Set<String> DEFAULT_CONFIGURATORS = new HashSet<String>()
     {
@@ -86,6 +87,9 @@ public abstract class AbstractArqASGoal
     private Map<String, ASConfigurator> configuratorMap;
 
     private Log log;
+
+    @SuppressWarnings( "rawtypes" )
+    private Map pluginContext;
 
     protected final Properties createConfiguratorProperties()
     {
@@ -174,6 +178,19 @@ public abstract class AbstractArqASGoal
             getLog().warn( "Cannot find ASConfigurator with hint: '" + hint + "'." );
         }
         return configurator;
+    }
+
+    @Override
+    public void setPluginContext( @SuppressWarnings( "rawtypes" ) final Map pluginContext )
+    {
+        this.pluginContext = pluginContext;
+    }
+
+    @SuppressWarnings( "rawtypes" )
+    @Override
+    public Map getPluginContext()
+    {
+        return pluginContext;
     }
 
 }
