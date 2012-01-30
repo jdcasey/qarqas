@@ -1,7 +1,6 @@
 package org.commonjava.maven.plugins.arqas;
 
 import static org.codehaus.plexus.util.IOUtil.close;
-import static org.commonjava.maven.plugins.arqas.QArqASConstants.ARQ_AS_EXPORT_CTX_PARAM;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -105,7 +104,6 @@ public class SetupArqASGoal
      */
     private File exportProperties;
 
-    @SuppressWarnings( "unchecked" )
     @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
@@ -135,24 +133,12 @@ public class SetupArqASGoal
 
         final Properties props = createConfiguratorProperties();
 
-        Map<String, String> exports;
-
         if ( doUnpack )
         {
             resolveAndUnpack();
-
-            exports = runConfigurators( props );
-
-            if ( exports != null )
-            {
-                getPluginContext().put( ARQ_AS_EXPORT_CTX_PARAM, exports );
-            }
-        }
-        else
-        {
-            exports = (Map<String, String>) getPluginContext().get( ARQ_AS_EXPORT_CTX_PARAM );
         }
 
+        final Map<String, String> exports = runConfigurators( props );
         generateArqXml( props );
 
         if ( exports != null )

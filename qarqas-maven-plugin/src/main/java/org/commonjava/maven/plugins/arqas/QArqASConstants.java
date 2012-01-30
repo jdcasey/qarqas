@@ -6,8 +6,6 @@ public final class QArqASConstants
 
     public static final String ARQ_AS_EXPORT_PREFIX = "qarqas.export.";
 
-    public static final String ARQ_AS_EXPORT_CTX_PARAM = "qarqas.exports";
-
     private QArqASConstants()
     {
     }
