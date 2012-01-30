@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.commonjava.arqas</groupId>
     <artifactId>qarqas-parent</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
   
   <artifactId>qarqas-port-api</artifactId>
