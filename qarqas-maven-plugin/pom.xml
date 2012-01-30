@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.commonjava.arqas</groupId>
     <artifactId>qarqas-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
   </parent>
   
   <groupId>org.commonjava.maven.plugins</groupId>
