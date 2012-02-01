@@ -63,7 +63,7 @@ public class MemoryPortDataManager
 
         if ( reservation != null )
         {
-            logger.info( "RESERVE: %s (client: %s)", reservation, clientKey );
+            logger.info( "RESERVE FOR CLIENT: %s\n%s", clientKey, reservation );
             unreserved.remove( reservation );
             reserved.put( clientKey, reservation );
 
@@ -83,7 +83,7 @@ public class MemoryPortDataManager
     {
         if ( reservation.equals( reserved.get( clientKey ) ) )
         {
-            logger.info( "RELEASE: %s (client: %s)", reservation, clientKey );
+            logger.info( "RELEASE FROM CLIENT: %s\n%s", clientKey, reservation );
             reserved.remove( clientKey );
             unreserved.add( reservation );
             clearExpiration( reservation );
@@ -207,7 +207,6 @@ public class MemoryPortDataManager
         {
             final PortConfiguration reservation = entry.getKey();
             final Date d = entry.getValue();
-            logger.info( "Current: %s\nExpiration: %s", current, d );
             if ( current.after( d ) )
             {
                 logger.info( "EXPIRE: %s", reservation );
