@@ -22,7 +22,7 @@
     <version>7</version>
   </parent>
 
-  <groupId>org.commonjava.arqas</groupId>
+  <groupId>org.commonjava.qarqas</groupId>
   <artifactId>qarqas-parent</artifactId>
   <version>0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -33,6 +33,7 @@
     <module>qarqas-maven-plugin</module>
     <module>qarqas-port-api</module>
     <module>qarqas-port-registry</module>
+    <module>qarqas-test-harness</module>
   </modules>
   
   <scm>
@@ -43,12 +44,14 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4jVersion>1.6.2</slf4jVersion>
+    <configurationVersion>0.2</configurationVersion>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.commonjava.arqas</groupId>
+        <groupId>org.commonjava.qarqas</groupId>
         <artifactId>qarqas-port-api</artifactId>
         <version>0.2-SNAPSHOT</version>
       </dependency>
@@ -64,6 +67,87 @@
         <artifactId>junit</artifactId>
         <version>4.8.2</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.commonjava.web</groupId>
+        <artifactId>json-test-harness</artifactId>
+        <version>0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.commonjava.web</groupId>
+        <artifactId>json-serialization</artifactId>
+        <version>0.1</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.commonjava.util</groupId>
+        <artifactId>configuration-api</artifactId>
+        <version>${configurationVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.commonjava.util</groupId>
+        <artifactId>configuration-dotconf</artifactId>
+        <version>${configurationVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.commonjava.util</groupId>
+        <artifactId>logging</artifactId>
+        <version>1.1</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-ext</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.5</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <version>1.0.0.CR4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-arquillian-container-managed</artifactId>
+         <version>7.1.0.CR1b</version>
+         <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
