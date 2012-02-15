@@ -24,7 +24,7 @@
 
   <groupId>org.commonjava.qarqas</groupId>
   <artifactId>qarqas-parent</artifactId>
-  <version>0.2</version>
+  <version>0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <name>Quick Arquillian-JBossAS Tools for Maven Builds (Parent)</name>
@@ -53,7 +53,7 @@
       <dependency>
         <groupId>org.commonjava.qarqas</groupId>
         <artifactId>qarqas-port-api</artifactId>
-        <version>0.2</version>
+        <version>0.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>

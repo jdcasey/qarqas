@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.commonjava.qarqas</groupId>
     <artifactId>qarqas-parent</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
   </parent>
   
   <artifactId>qarqas-test-harness</artifactId>
