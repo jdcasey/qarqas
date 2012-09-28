@@ -28,10 +28,8 @@
    <container qualifier="jboss" default="true">
       <protocol type="jmx-as7">
          <property name="executionType">REMOTE</property>
+         <property name="executionMode">REMOTE</property>
       </protocol>
-      <!-- configuration>
-         <property name="jbossHome">/Users/jdcasey/apps/as7/jboss-as-7.1.0.Beta1b</property>
-      </configuration -->
    </container>
 
 </arquillian>
